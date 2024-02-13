@@ -4,6 +4,7 @@ import (
 	"github.com/alireza-fa/blog-go/src/api"
 	"github.com/alireza-fa/blog-go/src/constants"
 	"github.com/alireza-fa/blog-go/src/data/db"
+	"github.com/alireza-fa/blog-go/src/data/db/migrations"
 	"github.com/joho/godotenv"
 	"os"
 )
@@ -26,6 +27,8 @@ func init() {
 	if err != nil {
 		panic("Error connection database: " + err.Error())
 	}
+
+	migrations.Up1()
 }
 
 func main() {

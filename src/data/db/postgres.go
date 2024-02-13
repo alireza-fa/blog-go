@@ -19,7 +19,7 @@ func InitDb() error {
 		os.Getenv(constants.BlogDbHost), dbPort, os.Getenv(constants.BlogDbUser),
 		os.Getenv(constants.BlogDbPassword), os.Getenv(constants.BlogDbName), os.Getenv(constants.BlogDbSslMode))
 
-	dbClient, err := gorm.Open(postgres.Open(conn))
+	dbClient, err = gorm.Open(postgres.Open(conn))
 	if err != nil {
 		return err
 	}
@@ -30,9 +30,20 @@ func InitDb() error {
 		return err
 	}
 
-	maxIdleConns, _ := strconv.Atoi(os.Getenv(constants.MaxIdleCONNS))
-	maxOpenConns, _ := strconv.Atoi(os.Getenv(constants.MaxOpenConns))
-	connMaxLifetime, _ := strconv.Atoi(os.Getenv(constants.ConnMaxLifetime))
+	maxIdleConns, err := strconv.Atoi(os.Getenv(constants.MaxIdleCONNS))
+	if err != nil {
+		panic("error while set maxIdleConns")
+	}
+
+	maxOpenConns, err := strconv.Atoi(os.Getenv(constants.MaxOpenConns))
+	if err != nil {
+		panic("error while set maxOpenConns")
+	}
+
+	connMaxLifetime, err := strconv.Atoi(os.Getenv(constants.ConnMaxLifetime))
+	if err != nil {
+		panic("error while set connMaxLifetime")
+	}
 
 	sqlDb.SetMaxIdleConns(maxIdleConns)
 	sqlDb.SetMaxOpenConns(maxOpenConns)

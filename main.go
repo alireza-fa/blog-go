@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/alireza-fa/blog-go/src/api"
 	"github.com/alireza-fa/blog-go/src/constants"
 	"github.com/alireza-fa/blog-go/src/data/db"
-	"github.com/alireza-fa/blog-go/src/management"
 	"github.com/joho/godotenv"
 	"os"
 )
@@ -29,5 +29,5 @@ func init() {
 }
 
 func main() {
-	management.CreateWebServer()
+	api.InitialServer()
 }

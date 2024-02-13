@@ -1,4 +1,4 @@
-package management
+package api
 
 import (
 	"log"
@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func CreateWebServer() {
-	mux := http.NewServeMux()
+func InitialServer() {
+	var mux *http.ServeMux = http.NewServeMux()
 
 	server := http.Server{
 		Addr:         ":8080",

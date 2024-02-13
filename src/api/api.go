@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/alireza-fa/blog-go/src/api/handlers"
 	"log"
 	"net/http"
 	"time"
@@ -8,6 +9,8 @@ import (
 
 func InitialServer() {
 	var mux *http.ServeMux = http.NewServeMux()
+
+	mux.Handle("/test/", handlers.TestHandler{})
 
 	server := http.Server{
 		Addr:         ":8080",

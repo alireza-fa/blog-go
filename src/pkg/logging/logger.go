@@ -1,5 +1,11 @@
 package logging
 
+import (
+	"fmt"
+	"github.com/alireza-fa/blog-go/src/constants"
+	"os"
+)
+
 type Logger interface {
 	Init()
 
@@ -14,7 +20,12 @@ type Logger interface {
 	Fatal(cat Category, sub SubCategory, message string, extra map[ExtraKey]interface{})
 }
 
-//func NewLogger() Logger {
-//	switch os.Getenv(constants.Logger) {
-//	}
-//}
+func NewLogger() Logger {
+	fmt.Println("logger name:", os.Getenv(constants.Logger))
+	switch os.Getenv(constants.Logger) {
+	case "seq":
+		return NewSeqLog()
+	default:
+		panic("setting LOGGER in .env")
+	}
+}

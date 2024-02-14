@@ -5,6 +5,7 @@ import (
 	"github.com/alireza-fa/blog-go/src/data/cache"
 	"github.com/alireza-fa/blog-go/src/data/db"
 	"github.com/alireza-fa/blog-go/src/data/db/migrations"
+	"github.com/alireza-fa/blog-go/src/pkg/logging"
 	"github.com/joho/godotenv"
 )
 
@@ -14,11 +15,16 @@ func init() {
 	if err != nil {
 		panic("Error loading .env file")
 	}
+}
 
-	err = db.InitDb()
+func main() {
+	logger := logging.NewLogger()
+
+	err := db.InitDb()
 	if err != nil {
 		panic("connection to postgres failed: " + err.Error())
 	}
+	logger.Info(logging.Postgres, logging.Startup, "connection to postgres", nil)
 	defer db.CloseDb()
 
 	migrations.Up1()
@@ -28,8 +34,6 @@ func init() {
 		panic("connection to redis failed: " + err.Error())
 	}
 	defer cache.CloseRedis()
-}
 
-func main() {
 	api.InitialServer()
 }

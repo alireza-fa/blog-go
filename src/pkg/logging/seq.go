@@ -50,7 +50,7 @@ func NewSeqLog() *SeqLog {
 func (logger SeqLog) Init() {}
 
 func (logger SeqLog) Debug(cat Category, sub SubCategory, message string, extra map[ExtraKey]interface{}) {
-	go logger.CreateNewEvent(cat, sub, LevelInfo, message, extra)
+	go logger.CreateNewEvent(cat, sub, LevelDebug, message, extra)
 }
 
 func (logger SeqLog) Info(cat Category, sub SubCategory, message string, extra map[ExtraKey]interface{}) {
@@ -58,15 +58,15 @@ func (logger SeqLog) Info(cat Category, sub SubCategory, message string, extra m
 }
 
 func (logger SeqLog) Warn(cat Category, sub SubCategory, message string, extra map[ExtraKey]interface{}) {
-	go logger.CreateNewEvent(cat, sub, LevelInfo, message, extra)
+	go logger.CreateNewEvent(cat, sub, LevelWarn, message, extra)
 }
 
 func (logger SeqLog) Error(cat Category, sub SubCategory, message string, extra map[ExtraKey]interface{}) {
-	go logger.CreateNewEvent(cat, sub, LevelInfo, message, extra)
+	go logger.CreateNewEvent(cat, sub, LevelError, message, extra)
 }
 
 func (logger SeqLog) Fatal(cat Category, sub SubCategory, message string, extra map[ExtraKey]interface{}) {
-	go logger.CreateNewEvent(cat, sub, LevelInfo, message, extra)
+	go logger.CreateNewEvent(cat, sub, LevelFatal, message, extra)
 }
 
 func (logger SeqLog) CreateNewEvent(cat Category, sub SubCategory, level string, message string, extra map[ExtraKey]interface{}) {

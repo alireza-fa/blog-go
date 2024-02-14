@@ -13,6 +13,13 @@ import (
 var dbClient *gorm.DB
 
 func InitDb() error {
+	if os.Getenv(constants.DEBUG) == "" {
+		err := os.Setenv(constants.BlogDbHost, "localhost")
+		if err != nil {
+			panic(err)
+		}
+	}
+	
 	dbPort, err := strconv.Atoi(os.Getenv(constants.BlogDbPort))
 
 	conn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Tehran",

@@ -35,6 +35,22 @@ services:
     depends_on:
       - postgres
 
+  redis:
+    container_name: ${REDIS_HOST}
+    hostname: ${REDIS_HOST}
+    image: redis:latest
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD} --port ${REDIS_PORT}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis.conf
+    networks:
+      - blog_main
+
 networks:
   blog_main:
 

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/alireza-fa/blog-go/src/api/handlers"
+	"github.com/alireza-fa/blog-go/src/api/routers"
 	"log"
 	"net/http"
 	"time"
@@ -10,7 +10,7 @@ import (
 func InitialServer() {
 	var mux *http.ServeMux = http.NewServeMux()
 
-	mux.Handle("/test/", handlers.TestHandler{})
+	Routers(mux)
 
 	server := http.Server{
 		Addr:         ":8080",
@@ -20,4 +20,8 @@ func InitialServer() {
 	}
 
 	log.Fatal(server.ListenAndServe())
+}
+
+func Routers(mux *http.ServeMux) {
+	routers.UserRouters(mux)
 }

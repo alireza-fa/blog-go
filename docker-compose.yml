@@ -47,6 +47,19 @@ services:
     networks:
       - blog_main
 
+  seq:
+    image: datalust/seq:latest
+    container_name: seq_project_container
+    hostname: ${SEQ_HOST}
+    ports:
+      - ${SEQ_PORT}:80
+    environment:
+      ACCEPT_EULA: "Y"
+    volumes:
+      - ./data/project/seq:/data
+    networks:
+      - blog_main
+
 networks:
   blog_main:
 

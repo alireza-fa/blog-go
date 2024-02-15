@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-var logger = logging.NewLogger()
-
 var redisClient *redis.Client
 
 func InitRedis() error {
@@ -91,6 +89,8 @@ func CloseRedis() {
 }
 
 func Set[T any](c *redis.Client, key string, value T, expire time.Duration) error {
+	logger := logging.NewLogger()
+
 	v, err := json.Marshal(value)
 	if err != nil {
 		logger.Error(logging.Redis, logging.RedisSet,
@@ -102,6 +102,8 @@ func Set[T any](c *redis.Client, key string, value T, expire time.Duration) erro
 }
 
 func Get[T any](c *redis.Client, key string) (T, error) {
+	logger := logging.NewLogger()
+
 	var value T = *new(T)
 
 	v, err := c.Get(key).Result()

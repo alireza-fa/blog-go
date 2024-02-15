@@ -9,17 +9,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var logger logging.Logger
+
 func init() {
 	err := godotenv.Load(".env")
 
 	if err != nil {
 		panic("Error loading .env file")
 	}
+
+	logger = logging.NewLogger()
 }
 
 func main() {
-	logger := logging.NewLogger()
-
 	err := db.InitDb()
 	if err != nil {
 		panic("connection to postgres failed: " + err.Error())

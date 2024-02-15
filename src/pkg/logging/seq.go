@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/alireza-fa/blog-go/src/constants"
+	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -67,6 +68,8 @@ func (logger SeqLog) Error(cat Category, sub SubCategory, message string, extra 
 
 func (logger SeqLog) Fatal(cat Category, sub SubCategory, message string, extra map[ExtraKey]interface{}) {
 	go logger.CreateNewEvent(cat, sub, LevelFatal, message, extra)
+	<-time.After(time.Second * 1)
+	log.Fatal(message)
 }
 
 func (logger SeqLog) CreateNewEvent(cat Category, sub SubCategory, level string, message string, extra map[ExtraKey]interface{}) {

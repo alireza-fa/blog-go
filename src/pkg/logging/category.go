@@ -11,6 +11,7 @@ const (
 	Validation      Category = "Validation"
 	RequestResponse Category = "RequestResponse"
 	IO              Category = "IO"
+	Notification    Category = "Notification"
 )
 
 const (
@@ -26,6 +27,8 @@ const (
 
 	RedisSet SubCategory = "RedisSet"
 	RedisGet SubCategory = "RedisGet"
+
+	SendNotification SubCategory = "SendNotification"
 
 	Api             SubCategory = "Api"
 	HashPassword    SubCategory = "HashPassword"

@@ -59,6 +59,7 @@ services:
       - ./data/project/seq:/data
     networks:
       - blog_main
+    restart: unless-stopped
 
 networks:
   blog_main:

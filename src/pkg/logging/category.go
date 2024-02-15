@@ -36,14 +36,16 @@ const (
 )
 
 const (
-	AppName      ExtraKey = "AppName"
-	LoggerName   ExtraKey = "LoggerName"
-	ClientIp     ExtraKey = "ClientIp"
-	Method       ExtraKey = "Method"
-	StatusCode   ExtraKey = "StatusCode"
-	BodySize     ExtraKey = "BodySize"
-	Path         ExtraKey = "Path"
-	RequestBody  ExtraKey = "RequestBody"
-	ResponseBody ExtraKey = "ResponseBody"
-	ErrorMessage ExtraKey = "ErrorMessage"
+	AppName             ExtraKey = "AppName"
+	LoggerName          ExtraKey = "LoggerName"
+	ClientIp            ExtraKey = "ClientIp"
+	Method              ExtraKey = "Method"
+	StatusCode          ExtraKey = "StatusCode"
+	BodySize            ExtraKey = "BodySize"
+	Path                ExtraKey = "Path"
+	RequestBody         ExtraKey = "RequestBody"
+	ResponseBody        ExtraKey = "ResponseBody"
+	ErrorMessage        ExtraKey = "ErrorMessage"
+	NotificationMessage ExtraKey = "NotificationMessage"
+	NotificationSubject ExtraKey = "NotificationSubject"
 )

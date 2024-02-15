@@ -1,14 +1,18 @@
 package cache
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/alireza-fa/blog-go/src/constants"
+	"github.com/alireza-fa/blog-go/src/pkg/logging"
 	"github.com/go-redis/redis"
 	"log"
 	"os"
 	"strconv"
 	"time"
 )
+
+var logger = logging.NewLogger()
 
 var redisClient *redis.Client
 
@@ -84,4 +88,35 @@ func GetRedis() *redis.Client {
 
 func CloseRedis() {
 	redisClient.Close()
+}
+
+func Set[T any](c *redis.Client, key string, value T, expire time.Duration) error {
+	v, err := json.Marshal(value)
+	if err != nil {
+		logger.Error(logging.Redis, logging.RedisSet,
+			fmt.Sprintf("error while set key: %s and value %s, error: %s", key, value, err), nil)
+		return err
+	}
+	c.Set(key, v, expire)
+	return nil
+}
+
+func Get[T any](c *redis.Client, key string) (T, error) {
+	var value T = *new(T)
+
+	v, err := c.Get(key).Result()
+	if err != nil {
+		logger.Error(logging.Redis, logging.RedisGet,
+			fmt.Sprintf("error while get key: %s, error: %s", key, err), nil)
+		return value, err
+	}
+
+	err = json.Unmarshal([]byte(v), &value)
+	if err != nil {
+		logger.Error(logging.Redis, logging.RedisSet,
+			fmt.Sprintf("error while unmarshal cache result, cache result: %v, error: %s", v, err), nil)
+		return value, err
+	}
+
+	return value, nil
 }

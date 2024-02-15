@@ -24,6 +24,9 @@ const (
 	Delete    SubCategory = "Delete"
 	Rollback  SubCategory = "Rollback"
 
+	RedisSet SubCategory = "RedisSet"
+	RedisGet SubCategory = "RedisGet"
+
 	Api             SubCategory = "Api"
 	HashPassword    SubCategory = "HashPassword"
 	ValidationError SubCategory = "ValidationError"

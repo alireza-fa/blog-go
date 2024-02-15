@@ -12,6 +12,7 @@ const (
 	RequestResponse Category = "RequestResponse"
 	IO              Category = "IO"
 	Notification    Category = "Notification"
+	Otp             Category = "Otp"
 )
 
 const (
@@ -29,6 +30,8 @@ const (
 	RedisGet SubCategory = "RedisGet"
 
 	SendNotification SubCategory = "SendNotification"
+
+	OtpGenerate SubCategory = "OtpGenerate"
 
 	Api             SubCategory = "Api"
 	HashPassword    SubCategory = "HashPassword"
@@ -48,4 +51,6 @@ const (
 	ErrorMessage        ExtraKey = "ErrorMessage"
 	NotificationMessage ExtraKey = "NotificationMessage"
 	NotificationSubject ExtraKey = "NotificationSubject"
+	UserName            ExtraKey = "UserName"
+	Email               ExtraKey = "Email"
 )

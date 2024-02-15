@@ -6,7 +6,7 @@ import (
 )
 
 func UserRouters(mux *http.ServeMux) {
-	mux.Handle("/users/", handlers.UserFrontHandler{})
+	mux.Handle("/users/", handlers.NewUserFrontHandler())
 
 	mux.HandleFunc("/users/verify/", handlers.UserVerify)
 }

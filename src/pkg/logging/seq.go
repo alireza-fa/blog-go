@@ -44,6 +44,8 @@ func NewSeqLog() *SeqLog {
 		}
 
 		seqLogger = logger
+
+		log.Println("logger name: ", os.Getenv(constants.Logger))
 	})
 	return seqLogger
 }

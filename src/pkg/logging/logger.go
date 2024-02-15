@@ -2,7 +2,6 @@ package logging
 
 import (
 	"github.com/alireza-fa/blog-go/src/constants"
-	"log"
 	"os"
 )
 
@@ -21,8 +20,6 @@ type Logger interface {
 }
 
 func NewLogger() Logger {
-	log.Println("logger name:", os.Getenv(constants.Logger))
-
 	switch os.Getenv(constants.Logger) {
 	case "seq":
 		return NewSeqLog()

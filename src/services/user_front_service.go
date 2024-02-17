@@ -1,8 +1,10 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"github.com/alireza-fa/blog-go/src/api/dto"
+	"github.com/alireza-fa/blog-go/src/constants"
 	"github.com/alireza-fa/blog-go/src/data/cache"
 	"github.com/alireza-fa/blog-go/src/data/db"
 	"github.com/alireza-fa/blog-go/src/data/models"
@@ -20,6 +22,7 @@ type UserFrontService struct {
 	otpService   *OtpService
 	redisClient  *redis.Client
 	notification notification.Notifier
+	tokenService *TokenService
 	database     *gorm.DB
 }
 
@@ -29,6 +32,7 @@ func NewUserFrontService() *UserFrontService {
 		otpService:   NewOtpService(),
 		redisClient:  cache.GetRedis(),
 		notification: notification.NewNotifier(),
+		tokenService: NewTokenService(),
 		database:     db.GetDb(),
 	}
 }
@@ -82,23 +86,43 @@ func (service *UserFrontService) VerifyUser(userVerify *dto.UserVerify) (*models
 	user.Password = string(bytePassword)
 
 	database := service.database.Begin()
+
 	if err := database.Create(&user).Error; err != nil {
 		database.Rollback()
 		service.logger.Error(logging.Postgres, logging.Rollback, err.Error(), nil)
 	}
+	var defaultRole models.Role
+	if err := database.
+		Model(models.Role{}).
+		Where("name = ?", constants.DefaultRole).
+		Find(&defaultRole).Error; err != nil {
+		database.Rollback()
+		service.logger.Error(logging.Postgres, logging.Rollback, "default role not found"+err.Error(), nil)
+		return nil, err
+	}
+	userRole := models.UserRole{UserId: user.Id, RoleId: defaultRole.Id}
+	database.Create(&userRole)
+
 	database.Commit()
 
 	return &user, nil
 }
 
-func (service *UserFrontService) UserLogin(userLogin dto.UserLogin) (*models.User, error) {
+func (service *UserFrontService) UserLogin(userLogin dto.UserLogin) (*dto.TokenDetail, error) {
 	var user models.User
 
 	if err := service.database.
 		Model(&models.User{}).
 		Where("user_name = ?", userLogin.UserName).
+		Preload("UserRoles", func(tx *gorm.DB) *gorm.DB {
+			return tx.Preload("Role")
+		}).
 		Find(&user).Error; err != nil {
 		return nil, err
+	}
+
+	if user.UserName == "" {
+		return nil, errors.New("user with this information not found")
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userLogin.Password))
@@ -106,5 +130,18 @@ func (service *UserFrontService) UserLogin(userLogin dto.UserLogin) (*models.Use
 		return nil, err
 	}
 
-	return &user, nil
+	tokenDto := TokenDto{
+		UserId:   user.Id,
+		FullName: user.FullName,
+		UserName: user.UserName,
+		Email:    user.Email,
+	}
+
+	if len(*user.UserRoles) > 0 {
+		for _, ur := range *user.UserRoles {
+			tokenDto.Roles = append(tokenDto.Roles, ur.Role.Name)
+		}
+	}
+
+	return service.tokenService.GenerateToken(&tokenDto)
 }

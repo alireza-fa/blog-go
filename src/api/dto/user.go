@@ -11,3 +11,8 @@ type UserVerify struct {
 	UserName string `json:"userName" validate:"required,max=64,min=5"`
 	Code     int    `json:"code" validate:"required,min=1000,max=9999"`
 }
+
+type UserLogin struct {
+	UserName string `json:"userName" validate:"required,max=64,min=5"`
+	Password string `json:"password" validate:"required,min=8,max=64,containsany=abcdefghijklmnopqrstuvwxyz,containsany=ABCDEFGHIJKLMNOPQRSTUVWXYZ,containsany=1234567890"`
+}

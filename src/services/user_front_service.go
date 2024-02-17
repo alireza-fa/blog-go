@@ -9,6 +9,7 @@ import (
 	"github.com/alireza-fa/blog-go/src/pkg/logging"
 	"github.com/alireza-fa/blog-go/src/pkg/notification"
 	"github.com/go-redis/redis"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"strconv"
 	"time"
@@ -71,8 +72,14 @@ func (service *UserFrontService) VerifyUser(userVerify *dto.UserVerify) (*models
 		UserName: userCreate.UserName,
 		Email:    userCreate.Email,
 		FullName: userCreate.FullName,
-		Password: userCreate.Password,
 	}
+
+	bytePassword, err := bcrypt.GenerateFromPassword([]byte(userCreate.Password), bcrypt.DefaultCost)
+	if err != nil {
+		service.logger.Error(logging.General, logging.HashPassword, err.Error(), nil)
+	}
+
+	user.Password = string(bytePassword)
 
 	database := service.database.Begin()
 	if err := database.Create(&user).Error; err != nil {
@@ -80,6 +87,24 @@ func (service *UserFrontService) VerifyUser(userVerify *dto.UserVerify) (*models
 		service.logger.Error(logging.Postgres, logging.Rollback, err.Error(), nil)
 	}
 	database.Commit()
+
+	return &user, nil
+}
+
+func (service *UserFrontService) UserLogin(userLogin dto.UserLogin) (*models.User, error) {
+	var user models.User
+
+	if err := service.database.
+		Model(&models.User{}).
+		Where("user_name = ?", userLogin.UserName).
+		Find(&user).Error; err != nil {
+		return nil, err
+	}
+
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userLogin.Password))
+	if err != nil {
+		return nil, err
+	}
 
 	return &user, nil
 }

@@ -23,7 +23,7 @@ func NewOtpService() *OtpService {
 	}
 }
 
-func (service *OtpService) SetOtp(user dto.CreateUser) error {
+func (service *OtpService) SetOtp(user dto.CreateUser) (int, error) {
 	key := user.UserName + "_otp"
 
 	code, _ := cache.Get[int](service.redisClient, key)
@@ -31,20 +31,36 @@ func (service *OtpService) SetOtp(user dto.CreateUser) error {
 	if code != 0 {
 		service.logger.Warn(logging.Otp, logging.OtpGenerate,
 			"you can get just one code in two minutes", map[logging.ExtraKey]interface{}{logging.UserName: user.UserName, logging.Email: user.Email})
-		return errors.New("you can get just one code in two minutes")
+		return 0, errors.New("you can get just one code in two minutes")
 	}
 
 	code = rand.Intn(9999-999) + 999
 
 	err := cache.Set[int](service.redisClient, key, code, time.Second*120)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	extraInfo := map[logging.ExtraKey]interface{}{logging.UserName: user.UserName, logging.Email: user.Email}
 	service.logger.Info(logging.Redis, logging.RedisSet, fmt.Sprintf("Set a otp code for %s code: %d", user.UserName, code), extraInfo)
 
-	return nil
+	return code, nil
 }
 
-func (service *OtpService) GetOtp(key string) {}
+func (service *OtpService) VerifyOtp(user *dto.UserVerify) (int, error) {
+	key := user.UserName + "_otp"
+
+	code, err := cache.Get[int](service.redisClient, key)
+	if err != nil {
+		service.logger.Info(logging.Otp, logging.OtpGet, fmt.Sprintf("not found otp code for %s", user.UserName),
+			map[logging.ExtraKey]interface{}{logging.UserName: user.UserName, logging.OtpCode: user.Code})
+		return code, err
+	}
+
+	if user.Code != code {
+		service.logger.Info(logging.Otp, logging.OtpGet, fmt.Sprintf("not valid otp code %s", user.UserName), nil)
+		return code, errors.New("invalid code")
+	}
+
+	return code, nil
+}

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/alireza-fa/blog-go/src/api/dto"
 	"github.com/alireza-fa/blog-go/src/api/helper"
@@ -20,7 +21,7 @@ func NewUserFrontHandler() *UserFrontHandler {
 	}
 }
 
-func (handler UserFrontHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (handler *UserFrontHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
 		handler.CreateUser(w, r)
@@ -29,7 +30,7 @@ func (handler UserFrontHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func (handler UserFrontHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (handler *UserFrontHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user dto.CreateUser
 
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -51,7 +52,29 @@ func (handler UserFrontHandler) CreateUser(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	helper.BaseResponse(w, user, http.StatusCreated)
+	helper.BaseResponse(w, nil, http.StatusCreated)
 }
 
-func UserVerify(w http.ResponseWriter, r *http.Request) {}
+func (handler *UserFrontHandler) VerifyUser(w http.ResponseWriter, r *http.Request) {
+	var userCreate dto.UserVerify
+
+	err := json.NewDecoder(r.Body).Decode(&userCreate)
+	if err != nil {
+		helper.BaseResponseWithError(w, nil, http.StatusNotAcceptable, err)
+		return
+	}
+
+	validate := validator.New()
+	if err = validate.Struct(userCreate); err != nil {
+		helper.BaseResponseWithValidationError(w, nil, http.StatusBadRequest, err)
+		return
+	}
+
+	user, err := handler.service.VerifyUser(&userCreate)
+	if err != nil {
+		helper.BaseResponseWithError(w, nil, http.StatusNotAcceptable, errors.New("invalid code"))
+		return
+	}
+
+	helper.BaseResponse(w, user, http.StatusOK)
+}

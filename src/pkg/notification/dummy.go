@@ -4,17 +4,20 @@ import (
 	"github.com/alireza-fa/blog-go/src/pkg/logging"
 )
 
-type DummyNotification struct{}
+type DummyNotification struct {
+	logger logging.Logger
+}
 
 func NewDummyNotification() *DummyNotification {
-	return &DummyNotification{}
+	return &DummyNotification{
+		logger: logging.NewLogger(),
+	}
 }
 
 func (dummy DummyNotification) Init() {}
 
 func (dummy DummyNotification) Send(receiver string, extra map[string]string) {
-	logger := logging.NewLogger()
 
 	extraLog := map[logging.ExtraKey]interface{}{Receiver: receiver, logging.NotificationMessage: extra[Message]}
-	logger.Info(logging.Notification, logging.SendNotification, extra[Message], extraLog)
+	dummy.logger.Info(logging.Notification, logging.SendNotification, extra[Message], extraLog)
 }

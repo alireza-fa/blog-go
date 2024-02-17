@@ -32,6 +32,7 @@ const (
 	SendNotification SubCategory = "SendNotification"
 
 	OtpGenerate SubCategory = "OtpGenerate"
+	OtpGet      SubCategory = "OtpGet"
 
 	Api             SubCategory = "Api"
 	HashPassword    SubCategory = "HashPassword"
@@ -53,4 +54,5 @@ const (
 	NotificationSubject ExtraKey = "NotificationSubject"
 	UserName            ExtraKey = "UserName"
 	Email               ExtraKey = "Email"
+	OtpCode             ExtraKey = "OtpCode"
 )

@@ -37,5 +37,5 @@ func main() {
 	}
 	defer cache.CloseRedis()
 
-	api.InitialServer()
+	api.InitialServer(logger)
 }

@@ -2,12 +2,13 @@ package api
 
 import (
 	"github.com/alireza-fa/blog-go/src/api/routers"
+	"github.com/alireza-fa/blog-go/src/pkg/logging"
 	"log"
 	"net/http"
 	"time"
 )
 
-func InitialServer() {
+func InitialServer(logger logging.Logger) {
 	var mux *http.ServeMux = http.NewServeMux()
 
 	Routers(mux)

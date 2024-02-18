@@ -8,7 +8,7 @@ import (
 func UserRouters(router chi.Router) {
 	handler := handlers.NewUserFrontHandler()
 
-	router.Post("/users/register/", handler.UserRegister)
-	router.Post("/users/verify/", handler.UserVerify)
-	router.Post("/users/login/", handler.UserLogin)
+	router.Post("/register/", handler.UserRegister)
+	router.Post("/verify/", handler.UserVerify)
+	router.Post("/login/", handler.UserLogin)
 }

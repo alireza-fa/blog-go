@@ -20,18 +20,7 @@ func NewUserFrontHandler() *UserFrontHandler {
 	}
 }
 
-func (handler *UserFrontHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch {
-	case r.Method == http.MethodPost && r.URL.Path == "/users/register/":
-		handler.UserRegister(w, r)
-	case r.Method == http.MethodPost && r.URL.Path == "/users/verify/":
-		handler.UserVerify(w, r)
-	case r.Method == http.MethodPost && r.URL.Path == "/users/login/":
-		handler.UserLogin(w, r)
-	default:
-		helper.BaseResponse(w, "", http.StatusMethodNotAllowed)
-	}
-}
+func (handler *UserFrontHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
 
 // UserRegister godoc
 // @Summary Send otp to user

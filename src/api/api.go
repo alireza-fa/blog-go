@@ -20,7 +20,7 @@ func InitialServer(logger logging.Logger) {
 
 	router.Use(middlewares.LogMiddleware)
 
-	Routers(router)
+	router.Route("/api/", Routers)
 
 	RegisterSwagger(router, logger)
 
@@ -35,7 +35,7 @@ func InitialServer(logger logging.Logger) {
 }
 
 func Routers(router chi.Router) {
-	routers.UserRouters(router)
+	router.Route("/users/", routers.UserRouters)
 }
 
 func RegisterSwagger(router chi.Router, logger logging.Logger) {

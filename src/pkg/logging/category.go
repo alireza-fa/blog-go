@@ -49,6 +49,7 @@ const (
 	Path                ExtraKey = "Path"
 	RequestBody         ExtraKey = "RequestBody"
 	ResponseBody        ExtraKey = "ResponseBody"
+	Timestamp           ExtraKey = "Timestamp"
 	ErrorMessage        ExtraKey = "ErrorMessage"
 	NotificationMessage ExtraKey = "NotificationMessage"
 	NotificationSubject ExtraKey = "NotificationSubject"

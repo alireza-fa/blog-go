@@ -1,0 +1,83 @@
+definitions:
+  dto.CreateUser:
+    properties:
+      email:
+        maxLength: 64
+        minLength: 10
+        type: string
+      fullName:
+        maxLength: 64
+        minLength: 5
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+      userName:
+        maxLength: 64
+        minLength: 5
+        type: string
+    required:
+    - email
+    - password
+    - userName
+    type: object
+  helper.BaseHttpResponse:
+    properties:
+      error: {}
+      result: {}
+      statusCode:
+        type: integer
+      success:
+        type: boolean
+      validationErrors:
+        items:
+          $ref: '#/definitions/helper.ValidationError'
+        type: array
+    type: object
+  helper.ValidationError:
+    properties:
+      error:
+        type: string
+      key:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Send otp to user
+      parameters:
+      - description: GetOtpRequest
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponse'
+        "409":
+          description: Failed
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponse'
+      summary: Send otp to user
+      tags:
+      - Users
+securityDefinitions:
+  AuthBearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

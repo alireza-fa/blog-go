@@ -2,13 +2,13 @@ package routers
 
 import (
 	"github.com/alireza-fa/blog-go/src/api/handlers"
-	"github.com/alireza-fa/blog-go/src/api/middlewares"
-	"github.com/alireza-fa/blog-go/src/pkg/logging"
-	"net/http"
+	"github.com/go-chi/chi"
 )
 
-func UserRouters(mux *http.ServeMux) {
+func UserRouters(router chi.Router) {
 	handler := handlers.NewUserFrontHandler()
 
-	mux.Handle("/users/", middlewares.LogMiddleware(handler, logging.NewLogger()))
+	router.Post("/users/register/", handler.UserRegister)
+	router.Post("/users/verify/", handler.UserVerify)
+	router.Post("/users/login/", handler.UserLogin)
 }

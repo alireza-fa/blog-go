@@ -21,6 +21,9 @@ func init() {
 	logger = logging.NewLogger()
 }
 
+// @securityDefinitions.apikey AuthBearer
+// @in header
+// @name Authorization
 func main() {
 	err := db.InitDb()
 	if err != nil {

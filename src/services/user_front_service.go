@@ -38,6 +38,22 @@ func NewUserFrontService() *UserFrontService {
 }
 
 func (service *UserFrontService) CreateUser(user dto.CreateUser) error {
+	exist, err := service.checkUserNameExist(user.UserName)
+	if err != nil {
+		return err
+	}
+	if exist {
+		return errors.New("this username already exists")
+	}
+
+	exist, err = service.checkEmailExist(user.Email)
+	if err != nil {
+		return err
+	}
+	if exist {
+		return errors.New("this email already taken")
+	}
+
 	key := user.UserName + "info"
 
 	code, err := service.otpService.SetOtp(user)
@@ -144,4 +160,28 @@ func (service *UserFrontService) UserLogin(userLogin dto.UserLogin) (*dto.TokenD
 	}
 
 	return service.tokenService.GenerateToken(&tokenDto)
+}
+
+func (service *UserFrontService) checkUserNameExist(username string) (bool, error) {
+	var exists bool
+	if err := service.database.Model(models.User{}).
+		Select("count(*) > 0").
+		Where("user_name = ?", username).
+		Find(&exists).Error; err != nil {
+		service.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
+		return false, err
+	}
+	return exists, nil
+}
+
+func (service *UserFrontService) checkEmailExist(email string) (bool, error) {
+	var exists bool
+	if err := service.database.Model(models.User{}).
+		Select("count(*) > 0").
+		Where("email = ?", email).
+		Find(&exists).Error; err != nil {
+		service.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
+		return false, err
+	}
+	return exists, nil
 }

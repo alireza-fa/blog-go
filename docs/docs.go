@@ -15,9 +15,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/users/register": {
+        "/api/users/register/": {
             "post": {
-                "description": "Send otp to user",
+                "description": "register user",
                 "consumes": [
                     "application/json"
                 ],
@@ -27,10 +27,10 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Send otp to user",
+                "summary": "register user",
                 "parameters": [
                     {
-                        "description": "GetOtpRequest",
+                        "description": "ًRegister User",
                         "name": "Request",
                         "in": "body",
                         "required": true,
@@ -49,13 +49,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Failed",
                         "schema": {
-                            "$ref": "#/definitions/helper.BaseHttpResponse"
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithValidationError"
                         }
                     },
-                    "409": {
+                    "406": {
                         "description": "Failed",
                         "schema": {
-                            "$ref": "#/definitions/helper.BaseHttpResponse"
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithError"
                         }
                     }
                 }
@@ -96,7 +96,31 @@ const docTemplate = `{
         "helper.BaseHttpResponse": {
             "type": "object",
             "properties": {
+                "result": {},
+                "statusCode": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "helper.BaseHttpResponseWithError": {
+            "type": "object",
+            "properties": {
                 "error": {},
+                "result": {},
+                "statusCode": {
+                    "type": "integer"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "helper.BaseHttpResponseWithValidationError": {
+            "type": "object",
+            "properties": {
                 "result": {},
                 "statusCode": {
                     "type": "integer"

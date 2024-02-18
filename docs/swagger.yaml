@@ -24,7 +24,23 @@ definitions:
     type: object
   helper.BaseHttpResponse:
     properties:
+      result: {}
+      statusCode:
+        type: integer
+      success:
+        type: boolean
+    type: object
+  helper.BaseHttpResponseWithError:
+    properties:
       error: {}
+      result: {}
+      statusCode:
+        type: integer
+      success:
+        type: boolean
+    type: object
+  helper.BaseHttpResponseWithValidationError:
+    properties:
       result: {}
       statusCode:
         type: integer
@@ -45,13 +61,13 @@ definitions:
 info:
   contact: {}
 paths:
-  /users/register:
+  /api/users/register/:
     post:
       consumes:
       - application/json
-      description: Send otp to user
+      description: register user
       parameters:
-      - description: GetOtpRequest
+      - description: ًRegister User
         in: body
         name: Request
         required: true
@@ -67,12 +83,12 @@ paths:
         "400":
           description: Failed
           schema:
-            $ref: '#/definitions/helper.BaseHttpResponse'
-        "409":
+            $ref: '#/definitions/helper.BaseHttpResponseWithValidationError'
+        "406":
           description: Failed
           schema:
-            $ref: '#/definitions/helper.BaseHttpResponse'
-      summary: Send otp to user
+            $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      summary: register user
       tags:
       - Users
 securityDefinitions:

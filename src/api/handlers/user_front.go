@@ -23,16 +23,16 @@ func NewUserFrontHandler() *UserFrontHandler {
 func (handler *UserFrontHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
 
 // UserRegister godoc
-// @Summary Send otp to user
-// @Description Send otp to user
+// @Summary register user
+// @Description register user
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Param Request body dto.CreateUser true "GetOtpRequest"
+// @Param Request body dto.CreateUser true "ًRegister User"
 // @Success 201 {object} helper.BaseHttpResponse "Success"
-// @Failure 400 {object} helper.BaseHttpResponse "Failed"
-// @Failure 409 {object} helper.BaseHttpResponse "Failed"
-// @Router /users/register [post]
+// @Failure 400 {object} helper.BaseHttpResponseWithValidationError "Failed"
+// @Failure 406 {object} helper.BaseHttpResponseWithError "Failed"
+// @Router /api/users/register/ [post]
 func (handler *UserFrontHandler) UserRegister(w http.ResponseWriter, r *http.Request) {
 	var user dto.CreateUser
 

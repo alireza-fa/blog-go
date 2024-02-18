@@ -12,10 +12,22 @@ type ValidationError struct {
 }
 
 type BaseHttpResponse struct {
+	Success    bool        `json:"success"`
+	Result     interface{} `json:"result"`
+	StatusCode int         `json:"statusCode"`
+}
+
+type BaseHttpResponseWithError struct {
+	Success    bool        `json:"success"`
+	Result     interface{} `json:"result"`
+	StatusCode int         `json:"statusCode"`
+	Error      interface{} `json:"error,omitempty"`
+}
+
+type BaseHttpResponseWithValidationError struct {
 	Success          bool              `json:"success"`
 	Result           interface{}       `json:"result"`
 	StatusCode       int               `json:"statusCode"`
-	Error            interface{}       `json:"error,omitempty"`
 	ValidationErrors []ValidationError `json:"validationErrors,omitempty"`
 }
 
@@ -39,7 +51,7 @@ func BaseResponse(w http.ResponseWriter, result interface{}, statusCode int) {
 func BaseResponseWithError(w http.ResponseWriter, result interface{}, statusCode int, errorInfo error) {
 	w.Header().Set("Content-Type", "application/json")
 
-	response := BaseHttpResponse{
+	response := BaseHttpResponseWithError{
 		Success:    false,
 		Result:     result,
 		StatusCode: statusCode,
@@ -56,7 +68,7 @@ func BaseResponseWithError(w http.ResponseWriter, result interface{}, statusCode
 func BaseResponseWithValidationError(w http.ResponseWriter, result interface{}, statusCode int, errorInfo error) {
 	w.Header().Set("Content-Type", "application/json")
 
-	response := BaseHttpResponse{
+	response := BaseHttpResponseWithValidationError{
 		Success:    false,
 		Result:     result,
 		StatusCode: statusCode,

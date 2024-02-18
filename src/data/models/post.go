@@ -18,7 +18,7 @@ type Post struct {
 
 type Category struct {
 	BaseModel
-	Name           string `gorm:"type:string,size:64;not null;unique"`
+	Name           string `gorm:"type:string;size:64;not null;unique"`
 	PostCategories *[]PostCategory
 }
 
@@ -36,5 +36,5 @@ type PostComment struct {
 	PostId  int
 	User    User `gorm:"foreignKey:UserId;constraint:OnUpdate:NO ACTION;OnDelete:NO ACTION"`
 	UserId  int
-	message string `gorm:"type:string;size:224;not null"`
+	Message string `gorm:"type:string;size:224;not null"`
 }

@@ -23,6 +23,15 @@ func createTables(database *gorm.DB) {
 	tables = addNewTable(database, models.Role{}, tables)
 	tables = addNewTable(database, models.UserRole{}, tables)
 
+	// Base
+	tables = addNewTable(database, models.Image{}, tables)
+
+	// Post
+	tables = addNewTable(database, models.Post{}, tables)
+	tables = addNewTable(database, models.Category{}, tables)
+	tables = addNewTable(database, models.PostCategory{}, tables)
+	tables = addNewTable(database, models.PostComment{}, tables)
+
 	// default data
 	createDefaultUserInfo(database)
 

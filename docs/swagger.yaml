@@ -22,6 +22,45 @@ definitions:
     - password
     - userName
     type: object
+  dto.TokenDetail:
+    properties:
+      accessToken:
+        type: string
+      accessTokenExpireTime:
+        type: integer
+      refreshToken:
+        type: string
+      refreshTokenExpireTime:
+        type: integer
+    type: object
+  dto.UserLogin:
+    properties:
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+      userName:
+        maxLength: 64
+        minLength: 5
+        type: string
+    required:
+    - password
+    - userName
+    type: object
+  dto.UserVerify:
+    properties:
+      code:
+        maximum: 9999
+        minimum: 1000
+        type: integer
+      userName:
+        maxLength: 64
+        minLength: 5
+        type: string
+    required:
+    - code
+    - userName
+    type: object
   helper.BaseHttpResponse:
     properties:
       result: {}
@@ -61,6 +100,41 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/users/login/:
+    post:
+      consumes:
+      - application/json
+      description: user login
+      parameters:
+      - description: user login
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user login
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.TokenDetail'
+              type: object
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithValidationError'
+        "406":
+          description: error while login user
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      summary: user login
+      tags:
+      - Users
   /api/users/register/:
     post:
       consumes:
@@ -77,18 +151,48 @@ paths:
       - application/json
       responses:
         "201":
-          description: Success
+          description: register user
           schema:
             $ref: '#/definitions/helper.BaseHttpResponse'
         "400":
-          description: Failed
+          description: bad request
           schema:
             $ref: '#/definitions/helper.BaseHttpResponseWithValidationError'
         "406":
-          description: Failed
+          description: error while register user
           schema:
             $ref: '#/definitions/helper.BaseHttpResponseWithError'
       summary: register user
+      tags:
+      - Users
+  /api/users/verify/:
+    post:
+      consumes:
+      - application/json
+      description: user verify account
+      parameters:
+      - description: User verify
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserVerify'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user verified
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponse'
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithValidationError'
+        "406":
+          description: error while verifying user
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      summary: user verify account
       tags:
       - Users
 securityDefinitions:

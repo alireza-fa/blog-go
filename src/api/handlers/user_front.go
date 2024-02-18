@@ -29,9 +29,9 @@ func (handler *UserFrontHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 // @Accept json
 // @Produce json
 // @Param Request body dto.CreateUser true "ًRegister User"
-// @Success 201 {object} helper.BaseHttpResponse "Success"
-// @Failure 400 {object} helper.BaseHttpResponseWithValidationError "Failed"
-// @Failure 406 {object} helper.BaseHttpResponseWithError "Failed"
+// @Success 201 {object} helper.BaseHttpResponse "register user"
+// @Failure 400 {object} helper.BaseHttpResponseWithValidationError "bad request"
+// @Failure 406 {object} helper.BaseHttpResponseWithError "error while register user"
 // @Router /api/users/register/ [post]
 func (handler *UserFrontHandler) UserRegister(w http.ResponseWriter, r *http.Request) {
 	var user dto.CreateUser
@@ -58,6 +58,17 @@ func (handler *UserFrontHandler) UserRegister(w http.ResponseWriter, r *http.Req
 	helper.BaseResponse(w, nil, http.StatusCreated)
 }
 
+// UserVerify godoc
+// @Summary user verify account
+// @Description user verify account
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param Request body dto.UserVerify true "User verify"
+// @Success 200 {object} helper.BaseHttpResponse "user verified"
+// @Failure 400 {object} helper.BaseHttpResponseWithValidationError "bad request"
+// @Failure 406 {object} helper.BaseHttpResponseWithError "error while verifying user"
+// @Router /api/users/verify/ [post]
 func (handler *UserFrontHandler) UserVerify(w http.ResponseWriter, r *http.Request) {
 	var userCreate dto.UserVerify
 
@@ -82,6 +93,17 @@ func (handler *UserFrontHandler) UserVerify(w http.ResponseWriter, r *http.Reque
 	helper.BaseResponse(w, user, http.StatusOK)
 }
 
+// UserLogin godoc
+// @Summary user login
+// @Description user login
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param Request body dto.UserLogin true "user login"
+// @Success 200 {object} helper.BaseHttpResponse{result=dto.TokenDetail} "user login"
+// @Failure 400 {object} helper.BaseHttpResponseWithValidationError "bad request"
+// @Failure 406 {object} helper.BaseHttpResponseWithError "error while login user"
+// @Router /api/users/login/ [post]
 func (handler UserFrontHandler) UserLogin(w http.ResponseWriter, r *http.Request) {
 	var userLogin dto.UserLogin
 

@@ -15,6 +15,64 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/users/login/": {
+            "post": {
+                "description": "user login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "user login",
+                "parameters": [
+                    {
+                        "description": "user login",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLogin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "user login",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helper.BaseHttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/dto.TokenDetail"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithValidationError"
+                        }
+                    },
+                    "406": {
+                        "description": "error while login user",
+                        "schema": {
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/register/": {
             "post": {
                 "description": "register user",
@@ -41,19 +99,65 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Success",
+                        "description": "register user",
                         "schema": {
                             "$ref": "#/definitions/helper.BaseHttpResponse"
                         }
                     },
                     "400": {
-                        "description": "Failed",
+                        "description": "bad request",
                         "schema": {
                             "$ref": "#/definitions/helper.BaseHttpResponseWithValidationError"
                         }
                     },
                     "406": {
-                        "description": "Failed",
+                        "description": "error while register user",
+                        "schema": {
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/verify/": {
+            "post": {
+                "description": "user verify account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "user verify account",
+                "parameters": [
+                    {
+                        "description": "User verify",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserVerify"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "user verified",
+                        "schema": {
+                            "$ref": "#/definitions/helper.BaseHttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithValidationError"
+                        }
+                    },
+                    "406": {
+                        "description": "error while verifying user",
                         "schema": {
                             "$ref": "#/definitions/helper.BaseHttpResponseWithError"
                         }
@@ -85,6 +189,61 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 8
+                },
+                "userName": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 5
+                }
+            }
+        },
+        "dto.TokenDetail": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenExpireTime": {
+                    "type": "integer"
+                },
+                "refreshToken": {
+                    "type": "string"
+                },
+                "refreshTokenExpireTime": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UserLogin": {
+            "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 8
+                },
+                "userName": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 5
+                }
+            }
+        },
+        "dto.UserVerify": {
+            "type": "object",
+            "required": [
+                "code",
+                "userName"
+            ],
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "maximum": 9999,
+                    "minimum": 1000
                 },
                 "userName": {
                     "type": "string",

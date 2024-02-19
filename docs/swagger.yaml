@@ -31,6 +31,13 @@ definitions:
       userName:
         type: string
     type: object
+  dto.ProfileUpdate:
+    properties:
+      fullName:
+        maxLength: 64
+        minLength: 5
+        type: string
+    type: object
   dto.TokenDetail:
     properties:
       accessToken:
@@ -165,7 +172,46 @@ paths:
           description: UnAuthorization
           schema:
             $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      security:
+      - AuthBearer: []
       summary: user profile
+      tags:
+      - Users
+  /api/users/profile/update/:
+    patch:
+      consumes:
+      - application/json
+      description: user profile update
+      parameters:
+      - description: user profile update
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProfileUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user profile updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.Profile'
+              type: object
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithValidationError'
+        "406":
+          description: not acceptable
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      security:
+      - AuthBearer: []
+      summary: user profile update
       tags:
       - Users
   /api/users/register/:

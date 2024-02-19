@@ -38,7 +38,7 @@ func Authentication(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), constants.UserIdKey, claimMap[constants.UserIdKey])
-		ctx = context.WithValue(ctx, constants.FullNameKey, claimMap[constants.UserNameKey])
+		ctx = context.WithValue(ctx, constants.FullNameKey, claimMap[constants.FullNameKey])
 		ctx = context.WithValue(ctx, constants.UserNameKey, claimMap[constants.UserNameKey])
 		ctx = context.WithValue(ctx, constants.EmailKey, claimMap[constants.EmailKey])
 		ctx = context.WithValue(ctx, constants.RolesKey, claimMap[constants.RolesKey])

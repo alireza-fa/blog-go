@@ -75,6 +75,11 @@ const docTemplate = `{
         },
         "/api/users/profile/": {
             "get": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
                 "description": "user profile",
                 "consumes": [
                     "application/json"
@@ -107,6 +112,69 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "UnAuthorization",
+                        "schema": {
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/profile/update/": {
+            "patch": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
+                "description": "user profile update",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "user profile update",
+                "parameters": [
+                    {
+                        "description": "user profile update",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProfileUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "user profile updated",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helper.BaseHttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/dto.Profile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithValidationError"
+                        }
+                    },
+                    "406": {
+                        "description": "not acceptable",
                         "schema": {
                             "$ref": "#/definitions/helper.BaseHttpResponseWithError"
                         }
@@ -249,6 +317,16 @@ const docTemplate = `{
                 },
                 "userName": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.ProfileUpdate": {
+            "type": "object",
+            "properties": {
+                "fullName": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 5
                 }
             }
         },

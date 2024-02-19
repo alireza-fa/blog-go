@@ -196,3 +196,18 @@ func (service *UserFrontService) UserProfile(ctx context.Context) *dto.Profile {
 
 	return &userProfile
 }
+
+func (service *UserFrontService) UserProfileUpdate(ctx context.Context, profileUpdate dto.ProfileUpdate) (*dto.Profile, error) {
+	var user models.User
+	user.FullName = profileUpdate.FullName
+
+	if err := service.database.
+		Model(models.User{}).
+		Where("id = ?", ctx.Value(constants.UserIdKey)).
+		Updates(&user).Error; err != nil {
+		service.logger.Error(logging.Postgres, logging.Update, err.Error(), nil)
+		return nil, err
+	}
+
+	return service.UserProfile(ctx), nil
+}

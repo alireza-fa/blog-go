@@ -104,7 +104,7 @@ func (handler *UserFrontHandler) UserVerify(w http.ResponseWriter, r *http.Reque
 // @Failure 400 {object} helper.BaseHttpResponseWithValidationError "bad request"
 // @Failure 406 {object} helper.BaseHttpResponseWithError "error while login user"
 // @Router /api/users/login/ [post]
-func (handler UserFrontHandler) UserLogin(w http.ResponseWriter, r *http.Request) {
+func (handler *UserFrontHandler) UserLogin(w http.ResponseWriter, r *http.Request) {
 	var userLogin dto.UserLogin
 
 	if err := json.NewDecoder(r.Body).Decode(&userLogin); err != nil {
@@ -136,8 +136,46 @@ func (handler UserFrontHandler) UserLogin(w http.ResponseWriter, r *http.Request
 // @Success 200 {object} helper.BaseHttpResponse{result=dto.Profile} "user profile info"
 // @Failure 401 {object} helper.BaseHttpResponseWithError "UnAuthorization"
 // @Router /api/users/profile/ [get]
-func (handler UserFrontHandler) UserProfile(w http.ResponseWriter, r *http.Request) {
+// @Security AuthBearer
+func (handler *UserFrontHandler) UserProfile(w http.ResponseWriter, r *http.Request) {
 	var userProfile *dto.Profile = handler.service.UserProfile(r.Context())
 
 	helper.BaseResponse(w, userProfile, http.StatusOK)
+}
+
+// UserProfileUpdate godoc
+// @Summary user profile update
+// @Description user profile update
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param Request body dto.ProfileUpdate true "user profile update"
+// @Success 200 {object} helper.BaseHttpResponse{result=dto.Profile} "user profile updated"
+// @Failure 400 {object} helper.BaseHttpResponseWithValidationError "bad request"
+// @Failure 406 {object} helper.BaseHttpResponseWithError "not acceptable"
+// @Router /api/users/profile/update/ [patch]
+// @Security AuthBearer
+func (handler *UserFrontHandler) UserProfileUpdate(w http.ResponseWriter, r *http.Request) {
+	var profileUpdate dto.ProfileUpdate
+
+	err := json.NewDecoder(r.Body).Decode(&profileUpdate)
+	if err != nil {
+		helper.BaseResponseWithError(w, nil, http.StatusNotAcceptable, err)
+		return
+	}
+
+	validate := validator.New()
+	err = validate.Struct(profileUpdate)
+	if err != nil {
+		helper.BaseResponseWithValidationError(w, nil, http.StatusBadRequest, err)
+		return
+	}
+
+	profile, err := handler.service.UserProfileUpdate(r.Context(), profileUpdate)
+	if err != nil {
+		helper.BaseResponseWithError(w, nil, http.StatusNotAcceptable, err)
+		return
+	}
+
+	helper.BaseResponse(w, profile, http.StatusOK)
 }

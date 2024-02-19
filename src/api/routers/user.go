@@ -22,4 +22,5 @@ func authRouter(router chi.Router) {
 	router.Use(middlewares.Authentication)
 
 	router.Get("/profile/", middlewares.Authorization(handler.UserProfile, []string{"default"}))
+	router.Patch("/profile/update/", middlewares.Authorization(handler.UserProfileUpdate, []string{"default"}))
 }

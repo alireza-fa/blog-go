@@ -7,8 +7,6 @@ type Profile struct {
 }
 
 type ProfileUpdate struct {
-	UserName string `json:"userName" validate:"min=5,max=64"`
-	Email    string `json:"email" validate:"min=10,max=64"`
 	FullName string `json:"fullName" validate:"min=5,max=64"`
 }
 

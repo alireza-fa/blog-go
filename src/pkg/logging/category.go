@@ -13,6 +13,7 @@ const (
 	IO              Category = "IO"
 	Notification    Category = "Notification"
 	Otp             Category = "Otp"
+	Token           Category = "Token"
 )
 
 const (
@@ -37,6 +38,8 @@ const (
 	Api             SubCategory = "Api"
 	HashPassword    SubCategory = "HashPassword"
 	ValidationError SubCategory = "ValidationError"
+
+	VerifyToken SubCategory = "VerifyToken"
 )
 
 const (

@@ -73,6 +73,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/users/profile/": {
+            "get": {
+                "description": "user profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "user profile",
+                "responses": {
+                    "200": {
+                        "description": "user profile info",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helper.BaseHttpResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/dto.Profile"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "UnAuthorization",
+                        "schema": {
+                            "$ref": "#/definitions/helper.BaseHttpResponseWithError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/register/": {
             "post": {
                 "description": "register user",
@@ -194,6 +235,20 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 5
+                }
+            }
+        },
+        "dto.Profile": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
                 }
             }
         },

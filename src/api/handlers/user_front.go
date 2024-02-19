@@ -120,10 +120,24 @@ func (handler UserFrontHandler) UserLogin(w http.ResponseWriter, r *http.Request
 
 	user, err := handler.service.UserLogin(userLogin)
 	if err != nil {
-		//helper.BaseResponseWithError(w, nil, http.StatusNotFound, errors.New("user with this information not found"))
 		helper.BaseResponseWithError(w, nil, http.StatusNotFound, err)
 		return
 	}
 
 	helper.BaseResponse(w, user, http.StatusOK)
+}
+
+// UserProfile godoc
+// @Summary user profile
+// @Description user profile
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Success 200 {object} helper.BaseHttpResponse{result=dto.Profile} "user profile info"
+// @Failure 401 {object} helper.BaseHttpResponseWithError "UnAuthorization"
+// @Router /api/users/profile/ [get]
+func (handler UserFrontHandler) UserProfile(w http.ResponseWriter, r *http.Request) {
+	var userProfile *dto.Profile = handler.service.UserProfile(r.Context())
+
+	helper.BaseResponse(w, userProfile, http.StatusOK)
 }

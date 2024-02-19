@@ -22,6 +22,15 @@ definitions:
     - password
     - userName
     type: object
+  dto.Profile:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      userName:
+        type: string
+    type: object
   dto.TokenDetail:
     properties:
       accessToken:
@@ -133,6 +142,30 @@ paths:
           schema:
             $ref: '#/definitions/helper.BaseHttpResponseWithError'
       summary: user login
+      tags:
+      - Users
+  /api/users/profile/:
+    get:
+      consumes:
+      - application/json
+      description: user profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user profile info
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.Profile'
+              type: object
+        "401":
+          description: UnAuthorization
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      summary: user profile
       tags:
       - Users
   /api/users/register/:

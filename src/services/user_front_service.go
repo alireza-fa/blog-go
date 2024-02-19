@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/alireza-fa/blog-go/src/api/dto"
@@ -184,4 +185,14 @@ func (service *UserFrontService) checkEmailExist(email string) (bool, error) {
 		return false, err
 	}
 	return exists, nil
+}
+
+func (service *UserFrontService) UserProfile(ctx context.Context) *dto.Profile {
+	var userProfile dto.Profile
+
+	userProfile.UserName = ctx.Value(constants.UserNameKey).(string)
+	userProfile.FullName = ctx.Value(constants.FullNameKey).(string)
+	userProfile.Email = ctx.Value(constants.EmailKey).(string)
+
+	return &userProfile
 }

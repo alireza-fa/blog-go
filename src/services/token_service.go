@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"github.com/alireza-fa/blog-go/src/api/dto"
 	"github.com/alireza-fa/blog-go/src/constants"
 	"github.com/alireza-fa/blog-go/src/pkg/logging"
@@ -66,4 +67,36 @@ func (s *TokenService) GenerateToken(token *TokenDto) (*dto.TokenDetail, error) 
 	}
 
 	return td, err
+}
+
+func (s *TokenService) VerifyAccessToken(token string) (*jwt.Token, error) {
+	at, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			s.logger.Error(logging.Token, logging.VerifyToken, "unexpect error while verifying token", nil)
+			return nil, errors.New("unexpected error while verifying token")
+		}
+		return []byte(os.Getenv(constants.AccessTokenSecretKey)), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return at, nil
+}
+
+func (s *TokenService) GetClaims(token string) (claimMap map[string]interface{}, err error) {
+	claimMap = map[string]interface{}{}
+
+	verifyToken, err := s.VerifyAccessToken(token)
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := verifyToken.Claims.(jwt.MapClaims)
+	if ok && verifyToken.Valid {
+		for k, v := range claims {
+			claimMap[k] = v
+		}
+		return claimMap, nil
+	}
+	return nil, err
 }

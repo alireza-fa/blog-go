@@ -1,5 +1,17 @@
 package dto
 
+type Profile struct {
+	UserName string `json:"userName"`
+	Email    string `json:"email"`
+	FullName string `json:"fullName"`
+}
+
+type ProfileUpdate struct {
+	UserName string `json:"userName" validate:"min=5,max=64"`
+	Email    string `json:"email" validate:"min=10,max=64"`
+	FullName string `json:"fullName" validate:"min=5,max=64"`
+}
+
 type CreateUser struct {
 	UserName string `json:"userName" validate:"required,max=64,min=5"`
 	Email    string `json:"email" validate:"email,required,min=10,max=64"`

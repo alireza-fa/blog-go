@@ -47,3 +47,28 @@ func Authentication(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func Authorization(next http.HandlerFunc, validRoles []string) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rolesVal := r.Context().Value(constants.RolesKey)
+		if rolesVal == nil {
+			helper.BaseResponseWithError(w, nil, http.StatusForbidden, errors.New("forbidden"))
+			return
+		}
+
+		roles := rolesVal.([]interface{})
+		val := map[string]int{}
+		for _, item := range roles {
+			val[item.(string)] = 0
+		}
+
+		for _, item := range validRoles {
+			if _, exists := val[item]; exists {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+
+		helper.BaseResponseWithError(w, nil, http.StatusForbidden, errors.New("forbidden"))
+	})
+}

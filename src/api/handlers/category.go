@@ -99,3 +99,24 @@ func (handler *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	helper.BaseResponse(w, category, http.StatusOK)
 }
+
+func (handler *CategoryHandler) GetCategory(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		categories, err := handler.service.GetCategories()
+		if err != nil {
+			helper.BaseResponseWithError(w, nil, http.StatusNotAcceptable, err)
+			return
+		}
+		helper.BaseResponse(w, categories, http.StatusOK)
+		return
+	}
+
+	category, err := handler.service.GetCategory(id)
+	if err != nil {
+		helper.BaseResponseWithError(w, nil, http.StatusNotFound, err)
+		return
+	}
+
+	helper.BaseResponse(w, category, http.StatusOK)
+}

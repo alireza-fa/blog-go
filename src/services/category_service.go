@@ -78,6 +78,30 @@ func (service *CategoryService) Update(categoryUpdate *dto.CategoryUpdate, id in
 		return nil, err
 	}
 
-	categoryOutput := dto.CategoryOutput{Id: 0, Name: categoryUpdate.Name}
-	return &categoryOutput, nil
+	return service.GetCategory(id)
+}
+
+func (service *CategoryService) GetCategory(id int) (*dto.CategoryOutput, error) {
+	var category dto.CategoryOutput
+
+	if err := service.database.
+		Model(models.Category{}).
+		Where("id = ?", id).
+		First(&category).Error; err != nil {
+		return nil, err
+	}
+	return &category, nil
+}
+
+func (service *CategoryService) GetCategories() ([]dto.CategoryOutput, error) {
+	var categories []dto.CategoryOutput
+
+	if err := service.database.
+		Model(models.Category{}).
+		Select("id, name").
+		Find(&categories).Error; err != nil {
+		return nil, err
+	}
+
+	return categories, nil
 }

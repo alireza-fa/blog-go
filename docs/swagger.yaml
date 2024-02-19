@@ -38,6 +38,13 @@ definitions:
         minLength: 5
         type: string
     type: object
+  dto.RefreshToken:
+    properties:
+      refreshToken:
+        type: string
+    required:
+    - refreshToken
+    type: object
   dto.TokenDetail:
     properties:
       accessToken:
@@ -116,6 +123,41 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/token/refresh/:
+    post:
+      consumes:
+      - application/json
+      description: generate and get a new access token
+      parameters:
+      - description: user profile update
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user profile updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.TokenDetail'
+              type: object
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithValidationError'
+        "406":
+          description: not acceptable
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      summary: refresh access token
+      tags:
+      - Token
   /api/users/login/:
     post:
       consumes:

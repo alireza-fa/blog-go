@@ -36,6 +36,8 @@ func InitialServer(logger logging.Logger) {
 
 func Routers(router chi.Router) {
 	router.Route("/users/", routers.UserRouters)
+
+	router.Route("/token/", routers.TokenRouter)
 }
 
 func RegisterSwagger(router chi.Router, logger logging.Logger) {

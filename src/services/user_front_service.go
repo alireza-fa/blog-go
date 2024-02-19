@@ -12,6 +12,7 @@ import (
 	"github.com/alireza-fa/blog-go/src/pkg/logging"
 	"github.com/alireza-fa/blog-go/src/pkg/notification"
 	"github.com/go-redis/redis"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"strconv"
@@ -147,20 +148,9 @@ func (service *UserFrontService) UserLogin(userLogin dto.UserLogin) (*dto.TokenD
 		return nil, err
 	}
 
-	tokenDto := TokenDto{
-		UserId:   user.Id,
-		FullName: user.FullName,
-		UserName: user.UserName,
-		Email:    user.Email,
-	}
+	tokenDto := service.tokenService.GetTokenDto(user)
 
-	if len(*user.UserRoles) > 0 {
-		for _, ur := range *user.UserRoles {
-			tokenDto.Roles = append(tokenDto.Roles, ur.Role.Name)
-		}
-	}
-
-	return service.tokenService.GenerateToken(&tokenDto)
+	return service.tokenService.GenerateToken(tokenDto)
 }
 
 func (service *UserFrontService) checkUserNameExist(username string) (bool, error) {
@@ -210,4 +200,38 @@ func (service *UserFrontService) UserProfileUpdate(ctx context.Context, profileU
 	}
 
 	return service.UserProfile(ctx), nil
+}
+
+func (service *UserFrontService) GetUser(userId int) (*models.User, error) {
+	var user models.User
+
+	if err := service.database.
+		Model(models.User{}).
+		Where("id = ?", userId).
+		Preload("UserRoles", func(tx *gorm.DB) *gorm.DB {
+			return tx.Preload("Role")
+		}).
+		Find(&user).Error; err != nil {
+		service.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (service *UserFrontService) UserRefreshToken(refreshToken dto.RefreshToken) (*dto.TokenDetail, error) {
+	rt, err := service.tokenService.VerifyRefreshToken(refreshToken.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+	claims := rt.Claims.(jwt.MapClaims)
+
+	user, err := service.GetUser(int(claims[constants.UserIdKey].(float64)))
+	if err != nil {
+		return nil, err
+	}
+
+	tokenDto := service.tokenService.GetTokenDto(*user)
+
+	return service.tokenService.GenerateAccessToken(tokenDto)
 }

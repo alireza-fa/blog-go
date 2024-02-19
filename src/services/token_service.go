@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/alireza-fa/blog-go/src/api/dto"
 	"github.com/alireza-fa/blog-go/src/constants"
+	"github.com/alireza-fa/blog-go/src/data/models"
 	"github.com/alireza-fa/blog-go/src/pkg/logging"
 	"github.com/golang-jwt/jwt/v5"
 	"os"
@@ -13,6 +14,7 @@ import (
 
 type TokenService struct {
 	logger logging.Logger
+	//userService *UserFrontService
 }
 
 type TokenDto struct {
@@ -26,7 +28,25 @@ type TokenDto struct {
 func NewTokenService() *TokenService {
 	return &TokenService{
 		logger: logging.NewLogger(),
+		//userService: NewUserFrontService(),
 	}
+}
+
+func (service *TokenService) GetTokenDto(user models.User) *TokenDto {
+	tokenDto := TokenDto{
+		UserId:   user.Id,
+		FullName: user.FullName,
+		UserName: user.UserName,
+		Email:    user.Email,
+	}
+
+	if len(*user.UserRoles) > 0 {
+		for _, ur := range *user.UserRoles {
+			tokenDto.Roles = append(tokenDto.Roles, ur.Role.Name)
+		}
+	}
+
+	return &tokenDto
 }
 
 func (s *TokenService) GenerateToken(token *TokenDto) (*dto.TokenDetail, error) {
@@ -69,12 +89,40 @@ func (s *TokenService) GenerateToken(token *TokenDto) (*dto.TokenDetail, error) 
 	return td, err
 }
 
+func (s *TokenService) GenerateAccessToken(token *TokenDto) (*dto.TokenDetail, error) {
+	td := &dto.TokenDetail{}
+
+	accessTokenDuration, _ := strconv.Atoi(os.Getenv(constants.AccessTokenLifetime))
+	td.AccessTokenExpireTime = time.Now().Add(time.Duration(accessTokenDuration) * time.Minute).Unix()
+
+	refreshTokenDuration, _ := strconv.Atoi(os.Getenv(constants.RefreshTokenLifetime))
+	td.RefreshTokenExpireTime = time.Now().Add(time.Duration(refreshTokenDuration) * time.Hour * 24).Unix()
+
+	act := jwt.MapClaims{}
+
+	act[constants.UserIdKey] = token.UserId
+	act[constants.FullNameKey] = token.FullName
+	act[constants.UserNameKey] = token.UserName
+	act[constants.EmailKey] = token.Email
+	act[constants.RolesKey] = token.Roles
+	act[constants.ExpireTimeKey] = td.AccessTokenExpireTime
+	ac := jwt.NewWithClaims(jwt.SigningMethodHS256, act)
+
+	var err error
+	td.AccessToken, err = ac.SignedString([]byte(os.Getenv(constants.AccessTokenSecretKey)))
+	if err != nil {
+		return nil, err
+	}
+
+	return td, err
+}
+
 func (s *TokenService) VerifyAccessToken(token string) (*jwt.Token, error) {
 	at, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
-			s.logger.Error(logging.Token, logging.VerifyToken, "unexpect error while verifying token", nil)
-			return nil, errors.New("unexpected error while verifying token")
+			s.logger.Error(logging.Token, logging.VerifyToken, "unexpect error while verifying access token", nil)
+			return nil, errors.New("unexpected error while verifying access token")
 		}
 		return []byte(os.Getenv(constants.AccessTokenSecretKey)), nil
 	})
@@ -91,6 +139,29 @@ func (s *TokenService) VerifyAccessToken(token string) (*jwt.Token, error) {
 	}
 
 	return at, nil
+}
+
+func (s *TokenService) VerifyRefreshToken(token string) (*jwt.Token, error) {
+	rt, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			s.logger.Error(logging.Token, logging.VerifyToken, "unexpect error while verifying refresh token", nil)
+			return nil, errors.New("unexpected error while verifying refresh token")
+		}
+		return []byte(os.Getenv(constants.RefreshTokenSecretKey)), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := rt.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, err
+	}
+	if claims[constants.ExpireTimeKey].(float64) < float64(time.Now().Unix()) {
+		return nil, errors.New("refresh token expired")
+	}
+
+	return rt, nil
 }
 
 func (s *TokenService) GetClaims(token string) (claimMap map[string]interface{}, err error) {

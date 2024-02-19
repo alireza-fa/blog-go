@@ -81,6 +81,15 @@ func (s *TokenService) VerifyAccessToken(token string) (*jwt.Token, error) {
 	if err != nil {
 		return nil, err
 	}
+	claims, ok := at.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, err
+	}
+	expire := claims[constants.ExpireTimeKey].(float64)
+	if expire < float64(time.Now().Unix()) {
+		return nil, errors.New("token is expired")
+	}
+
 	return at, nil
 }
 

@@ -6,7 +6,6 @@ import (
 	"github.com/alireza-fa/blog-go/src/api/helper"
 	"github.com/alireza-fa/blog-go/src/constants"
 	"github.com/alireza-fa/blog-go/src/services"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"strings"
 )
@@ -23,14 +22,6 @@ func Authentication(next http.Handler) http.Handler {
 			err = errors.New("token is required")
 		} else {
 			claimMap, err = tokenService.GetClaims(token[1])
-			if err != nil {
-				switch {
-				case errors.Is(err, jwt.ErrTokenExpired):
-					err = errors.New("token expired")
-				default:
-					err = errors.New("token is invalid")
-				}
-			}
 		}
 		if err != nil {
 			helper.BaseResponseWithError(w, nil, http.StatusUnauthorized, err)

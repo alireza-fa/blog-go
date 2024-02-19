@@ -12,4 +12,5 @@ func CategoryRouter(router chi.Router) {
 	router.Use(middlewares.Authentication)
 
 	router.Post("/", middlewares.Authorization(handler.Create, []string{"admin"}))
+	router.Patch("/", middlewares.Authorization(handler.Update, []string{"admin"}))
 }

@@ -15,6 +15,15 @@ definitions:
       name:
         type: string
     type: object
+  dto.CategoryUpdate:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 3
+        type: string
+    required:
+    - name
+    type: object
   dto.CreateUser:
     properties:
       email:
@@ -140,6 +149,47 @@ info:
   contact: {}
 paths:
   /api/categories/:
+    patch:
+      consumes:
+      - application/json
+      description: Update a category. Only admins can do it
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category update
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CategoryUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: updated
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.CategoryOutput'
+              type: object
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithValidationError'
+        "406":
+          description: not acceptable
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      security:
+      - AuthBearer: []
+      summary: Update category
+      tags:
+      - Categories
     post:
       consumes:
       - application/json

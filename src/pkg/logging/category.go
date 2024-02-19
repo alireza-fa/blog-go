@@ -26,6 +26,7 @@ const (
 	Update    SubCategory = "Update"
 	Delete    SubCategory = "Delete"
 	Rollback  SubCategory = "Rollback"
+	Commit    SubCategory = "Commit"
 
 	RedisSet SubCategory = "RedisSet"
 	RedisGet SubCategory = "RedisGet"

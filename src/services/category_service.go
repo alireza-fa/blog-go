@@ -55,3 +55,29 @@ func (service *CategoryService) checkCategoryExists(name string) (bool, error) {
 	}
 	return exists, nil
 }
+
+func (service *CategoryService) Update(categoryUpdate *dto.CategoryUpdate, id int) (*dto.CategoryOutput, error) {
+	tx := service.database.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.
+		Model(models.Category{}).
+		Where("id = ?", id).
+		Update("name", categoryUpdate.Name).Error; err != nil {
+		tx.Rollback()
+		service.logger.Error(logging.Postgres, logging.Rollback, err.Error(), nil)
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		service.logger.Error(logging.Postgres, logging.Commit, err.Error(), nil)
+		return nil, err
+	}
+
+	categoryOutput := dto.CategoryOutput{Id: 0, Name: categoryUpdate.Name}
+	return &categoryOutput, nil
+}

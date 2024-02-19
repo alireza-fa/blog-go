@@ -1,4 +1,20 @@
 definitions:
+  dto.CategoryCreate:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 3
+        type: string
+    required:
+    - name
+    type: object
+  dto.CategoryOutput:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   dto.CreateUser:
     properties:
       email:
@@ -123,6 +139,43 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/categories/:
+    post:
+      consumes:
+      - application/json
+      description: Create category. Only admin can create a new category
+      parameters:
+      - description: category create
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CategoryCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: created
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/dto.CategoryOutput'
+              type: object
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithValidationError'
+        "406":
+          description: error while creating a new category
+          schema:
+            $ref: '#/definitions/helper.BaseHttpResponseWithError'
+      security:
+      - AuthBearer: []
+      summary: Create category
+      tags:
+      - Categories
   /api/token/refresh/:
     post:
       consumes:

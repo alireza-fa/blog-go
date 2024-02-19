@@ -18,6 +18,7 @@ import (
 func InitialServer(logger logging.Logger) {
 	var router chi.Router = chi.NewRouter()
 
+	router.Use(middlewares.Cors)
 	router.Use(middlewares.LogMiddleware)
 
 	router.Route("/api/", Routers)
